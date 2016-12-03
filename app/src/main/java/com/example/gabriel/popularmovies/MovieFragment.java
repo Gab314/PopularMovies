@@ -47,7 +47,7 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_list, container, false);
 
-        mMovieAdapter = new ArrayAdapter<String>(
+        mMovieAdapter = new ArrayAdapter<>(
                 getActivity(),
                 R.layout.movie_grid,
                 R.id.grid_view_textView,
@@ -70,7 +70,8 @@ public class MovieFragment extends Fragment {
     }
     private void updateMovies() {
         FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute();
+        String pop = "popularity.desc";
+        movieTask.execute(pop);
     }
     @Override
     public void onStart(){
@@ -79,7 +80,7 @@ public class MovieFragment extends Fragment {
     }
     public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
-        private String[] getMovieDataFromJson(String movieJsonStr, int numMovies)
+        private String[] getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{
             final String MDB_results = "results";
             final String MDB_popularity = "popularity";
@@ -93,14 +94,19 @@ public class MovieFragment extends Fragment {
             Iterator<String> keys = movieJson.keys();
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
-            String[] resultString = new String[numMovies];
+            String[] resultString = new String[20];
+
             for(int i=0; i< movieArray.length(); i++){
                 String title;
+                String poster;
                 JSONObject popularResults = movieArray.getJSONObject(i);
                 title = popularResults.getString(MDB_Title);
+                poster = popularResults.getString(MDB_Poster);
                 resultString[i] = title;
+                //resultString[i][2] = poster;
             }
             return resultString;
+
         }
 
 
@@ -109,7 +115,7 @@ public class MovieFragment extends Fragment {
 
         @Override
         protected String[] doInBackground(String... params) {
-            if (params.length == 0){
+            if (params.length == 0) {
                 return null;
             }
             HttpURLConnection urlConnection = null;
@@ -117,7 +123,7 @@ public class MovieFragment extends Fragment {
             String movieJsonStr = null;
             int numMovies = 10;
             try{
-                final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie";
+                final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
                 final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
                 final String MDB_SORT_PARAM = "sort_by";
@@ -164,12 +170,12 @@ public class MovieFragment extends Fragment {
                 }
             }
             try{
-                return getMovieDataFromJson(movieJsonStr, numMovies);
+                return getMovieDataFromJson(movieJsonStr);
             }catch (JSONException e){
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
-            return params;
+            return null;
 
         }
         @Override
