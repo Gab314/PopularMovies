@@ -51,7 +51,7 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_list, container, false);
 
-        mMovieAdapter = new ArrayAdapter<>(
+        mMovieAdapter = new ArrayAdapter<String>(
                 getActivity(),
                 R.layout.movie_grid,
                 R.id.grid_view_textView,
@@ -63,8 +63,8 @@ public class MovieFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String movie = mMovieAdapter.getItem(i);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String movie = mMovieAdapter.getItem(position);
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, movie);
                 startActivity(detailIntent);
