@@ -3,10 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
         <ImageView
-            android:layout_height="300dp"
-            android:layout_width="300dp"
+            android:contentDescription="@string/app_name"
+            android:id="@+id/grid_view_ImageView"
+            android:layout_height="20dp"
+            android:layout_width="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@mipmap/ic_launcher2"/>
+            />
 
         <TextView
             android:layout_height="wrap_content"

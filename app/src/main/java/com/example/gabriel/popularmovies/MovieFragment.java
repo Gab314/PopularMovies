@@ -2,11 +2,15 @@ package com.example.gabriel.popularmovies;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -68,7 +72,29 @@ public class MovieFragment extends Fragment {
         });
         return rootView;
     }
-    private void updateMovies() {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.menu_sort_type, menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id =item.getItemId();
+        if (id == R.id.most_popular){
+            updateMovies();
+        }
+        if (id==R.id.most_rated){
+            updateMovies2();
+        }
+        return true;
+    }
+    public void updateMovies2() {
+        FetchMovieTask movieTask = new FetchMovieTask();
+        String hrated = "vote_average.desc";
+        movieTask.execute(hrated);
+    }
+    public void updateMovies() {
         FetchMovieTask movieTask = new FetchMovieTask();
         String pop = "popularity.desc";
         movieTask.execute(pop);
@@ -121,7 +147,7 @@ public class MovieFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String movieJsonStr = null;
-            int numMovies = 10;
+            Bitmap PosterIcon;
             try{
                 final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
                 final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
@@ -153,9 +179,7 @@ public class MovieFragment extends Fragment {
                 }
                 movieJsonStr = buffer.toString();
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            }  catch (IOException e) {
                 e.printStackTrace();
             }finally {
                 if (urlConnection != null) {
