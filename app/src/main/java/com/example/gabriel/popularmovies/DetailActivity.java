@@ -67,9 +67,7 @@ public class DetailActivity extends AppCompatActivity {
             Intent intent = getActivity().getIntent();
 
                 mForeStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (intent.hasExtra(Intent.EXTRA_TEXT)){
-                    ((TextView) rootView.findViewById(R.id.detail_title_TextView)).setText(mForeStr);
-                }
+
 
             mMovieAdapter = new ArrayAdapter<String>(
                     getActivity(),
@@ -85,39 +83,42 @@ public class DetailActivity extends AppCompatActivity {
         }
         public void updateMovieDetail() {
             FetchMovieTask movieTask = new FetchMovieTask();
-            String pop = Intent.EXTRA_TEXT;
+            String pop = "3/movie/" + mForeStr;
             movieTask.execute(pop);
         }
     public class FetchMovieTask extends AsyncTask<String,Void,String[]>{
         TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
+        TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
+        TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
+        TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
         private String[] getMovieDetailsDataFromJson(String movieJSonStr)
 
             throws JSONException{
-            final String MDB_results = "results";
+            final String MDB_vote_average = "vote_average";
             final String MDB_Poster = "poster_path";
             final String MDB_Title = "original_title";
             final String MDB_release_date = "release_date";
             final String MDB_overview = "overview";
 
             JSONObject movieJson = new JSONObject(movieJSonStr);
-            JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
-            String[] resultString = new String[3];
+            String[] resultString = new String[6];
 
-
+                String voteAverage;
                 String title;
                 String poster;
                 String date;
                 String synopsis;
-                JSONObject popularResults = movieArray.getJSONObject(0);
-                title = popularResults.getString(MDB_Title);
-                poster = popularResults.getString(MDB_Poster);
-                date = popularResults.getString(MDB_release_date);
-                synopsis = popularResults.getString(MDB_overview);
-                resultString[0] = title;
-                resultString[1] = poster;
-                resultString[2] = date;
-                resultString[3] = synopsis;
+                date = movieJson.getString(MDB_release_date);
+                title = movieJson.getString(MDB_Title);
+                poster = movieJson.getString(MDB_Poster);
+                synopsis = movieJson.getString(MDB_overview);
+                voteAverage = movieJson.getString(MDB_vote_average);
+                resultString[1] = title;
+                resultString[2] = poster;
+                resultString[3] = date;
+                resultString[4] = voteAverage;
+                resultString[5] = synopsis;
 
 
             return resultString;
@@ -132,16 +133,15 @@ public class DetailActivity extends AppCompatActivity {
             String movieJsonStr = null;
             Bitmap PosterIcon;
             try{
-                final String MDB_BASE_URL = "https://api.themoviedb.org/3/search/movie?";
-                final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
+                Uri.Builder urlBuilder = new Uri.Builder();
+                final String MDB_BASE_URL = "api.themoviedb.org";
+                final String MDB_API_PARAMS = "api_key";
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
-                final String MDB_SORT_QUERY = "query";
-                Uri builtUri = Uri.parse(MDB_BASE_URL).buildUpon()
-                        .appendQueryParameter(MDB_API_PARAMS, MDB_API_KEY)
-                        .appendQueryParameter(MDB_SORT_QUERY, params[0])
-                        .build();
-                URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                urlBuilder.scheme("http");
+                urlBuilder.authority(MDB_BASE_URL);
+                urlBuilder.appendEncodedPath(params[0]);
+                urlBuilder.appendQueryParameter(MDB_API_PARAMS, MDB_API_KEY);
+                URL url = new URL(urlBuilder.build().toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -188,7 +188,10 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String[] result){
             if (result!=null){
+                TitleTextView.setText(result[1]);
                 DateTextView.setText(result[3]);
+                DetailTextView.setText(result[4]);
+                SynopsisTextView.setText(result[5]);
 
             }
         }

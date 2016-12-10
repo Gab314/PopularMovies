@@ -115,20 +115,20 @@ public class MovieFragment extends Fragment {
             final String MDB_release_date = "release_date";
             final String MDB_overview = "overview";
             final String MDB_vote_average = "vote average";
+            final String MDB_ID = "id";
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
-            Iterator<String> keys = movieJson.keys();
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
             String[] resultString = new String[20];
 
             for(int i=0; i< movieArray.length(); i++){
                 String title;
-                String poster;
+                String id;
                 JSONObject popularResults = movieArray.getJSONObject(i);
                 title = popularResults.getString(MDB_Title);
-                poster = popularResults.getString(MDB_Poster);
-                resultString[i] = title;
+                id = popularResults.getString(MDB_ID);
+                resultString[i] = id;
                 //resultString[i][2] = poster;
             }
             return resultString;
@@ -149,7 +149,7 @@ public class MovieFragment extends Fragment {
             String movieJsonStr = null;
             Bitmap PosterIcon;
             try{
-                final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie?";
+                final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie";
                 final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
                 final String MDB_SORT_PARAM = "sort_by";
