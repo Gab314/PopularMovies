@@ -15,9 +15,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,7 +61,6 @@ public class DetailActivity extends AppCompatActivity {
 
     public static class DetailFragment extends Fragment {
         private String mForeStr;
-        private ArrayAdapter<String> mMovieAdapter;
         private final String LOG_TAG = DetailActivity.DetailFragment.class.getSimpleName();
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,11 +71,7 @@ public class DetailActivity extends AppCompatActivity {
                 mForeStr = intent.getStringExtra(Intent.EXTRA_TEXT);
 
 
-            mMovieAdapter = new ArrayAdapter<String>(
-                    getActivity(),
-                    R.layout.activity_detail,
-                    R.id.detail_release_date_TextView,
-                    new ArrayList<String>());
+
             return rootView;
         }
         @Override
@@ -91,6 +89,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
         TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
         TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
+        ImageView PosterImageView = (ImageView) getActivity().findViewById(R.id.detail_poster_ImageView);
         private String[] getMovieDetailsDataFromJson(String movieJSonStr)
 
             throws JSONException{
@@ -187,11 +186,16 @@ public class DetailActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String[] result){
-            if (result!=null){
+            if (result!=null){;
                 TitleTextView.setText(result[1]);
                 DateTextView.setText(result[3]);
                 DetailTextView.setText(result[4]);
                 SynopsisTextView.setText(result[5]);
+                Picasso.with(getActivity())
+                        .load("http://image.tmdb.org/t/p/w185" + result[2])
+                        .fit()
+                        .centerCrop()
+                        .into(PosterImageView);
 
             }
         }
