@@ -19,7 +19,7 @@ import java.util.List;
 public class CustomImageAdapter extends ArrayAdapter {
 
 
-    public CustomImageAdapter(Context context, List<TmdbMovie> objects) {
+    public CustomImageAdapter(Context context, List<MovieItem> objects) {
         super(context, 0, objects);
     }
 
@@ -27,7 +27,7 @@ public class CustomImageAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         final String BASE_URL = "http://image.tmdb.org/t/p/w185";
-        TmdbMovie tmdbMovie = (TmdbMovie) getItem(position);
+        MovieItem movieItem = (MovieItem) getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.movie_grid, parent, false);
@@ -35,7 +35,7 @@ public class CustomImageAdapter extends ArrayAdapter {
         ImageView poster = (ImageView) convertView.findViewById(R.id.detail_poster_ImageView);
 
         Uri uri = Uri.parse(BASE_URL).buildUpon()
-                .appendPath(tmdbMovie.posterPath).build();
+                .appendPath(movieItem.posterPath).build();
 
         try {
             URL url = new URL(uri.toString());

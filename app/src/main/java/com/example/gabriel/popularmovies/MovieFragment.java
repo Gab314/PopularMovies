@@ -104,34 +104,29 @@ public class MovieFragment extends Fragment {
         super.onStart();
         updateMovies();
     }
-    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMovieTask extends AsyncTask<String, Void, ItemMovie> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
-        private String[] getMovieDataFromJson(String movieJsonStr)
+        private ItemMovie getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{
             final String MDB_results = "results";
-            final String MDB_popularity = "popularity";
             final String MDB_Poster = "poster_path";
-            final String MDB_Title = "original_title";
-            final String MDB_release_date = "release_date";
-            final String MDB_overview = "overview";
-            final String MDB_vote_average = "vote average";
             final String MDB_ID = "id";
-
+            int a =0;
+            String b = "NOPE";
+            ItemMovie itemMovie = new ItemMovie(a, b);
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
-            String[] resultString = new String[20];
-
             for(int i=0; i< movieArray.length(); i++){
-                String title;
+                String poster;
                 String id;
                 JSONObject popularResults = movieArray.getJSONObject(i);
-                title = popularResults.getString(MDB_Title);
+                poster = popularResults.getString(MDB_Poster);
                 id = popularResults.getString(MDB_ID);
-                resultString[i] = id;
-                //resultString[i][2] = poster;
+                itemMovie.put(id,poster);
+
             }
-            return resultString;
+            return itemMovie;
 
         }
 
@@ -140,7 +135,7 @@ public class MovieFragment extends Fragment {
 
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected ItemMovie doInBackground(String... params) {
             if (params.length == 0) {
                 return null;
             }
@@ -202,13 +197,10 @@ public class MovieFragment extends Fragment {
             return null;
 
         }
-        @Override
-        protected void onPostExecute(String[] result){
+        //@Override
+        protected void onPostExecute(ItemMovie result){
             if (result!=null){
-                mMovieAdapter.clear();
-                for(String titleMovieStr : result) {
-                    mMovieAdapter.add(titleMovieStr);
-                }
+
             }
         }
     }
