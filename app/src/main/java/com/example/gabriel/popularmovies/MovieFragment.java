@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MovieFragment extends Fragment {
-    private ArrayAdapter<String> mMovieAdapter;
-
+    //private ArrayAdapter<String> mMovieAdapter;
+    private ImageAdapter mImageAdapter;
     public MovieFragment() {
 
     }
@@ -51,14 +51,16 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_list, container, false);
 
-        mMovieAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.movie_grid,
-                R.id.grid_view_textView,
-                new ArrayList<String>());
+       // mMovieAdapter = new ArrayAdapter<String>(
+       //         getActivity(),
+       //         R.layout.movie_grid,
+       //         R.id.grid_view_textView,
+       //         new ArrayList<String>());
+        int i =0;
+        String j ="NOPE";
+        mImageAdapter = new ImageAdapter(getActivity(),R.id.grid_view_ImageView,new ItemMovie(i, j));
 
-
-        ListView listView = (ListView) rootView.findViewById(R.id.list_listView);
+       /* ListView listView = (ListView) rootView.findViewById(R.id.list_listView);
         listView.setAdapter(mMovieAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -69,7 +71,7 @@ public class MovieFragment extends Fragment {
                         .putExtra(Intent.EXTRA_TEXT, movie);
                 startActivity(detailIntent);
             }
-        });
+        });*/
         return rootView;
     }
     @Override
@@ -200,7 +202,10 @@ public class MovieFragment extends Fragment {
         //@Override
         protected void onPostExecute(ItemMovie result){
             if (result!=null){
-
+                try{
+            mImageAdapter.addImage(result, getView().findViewById(R.id.grid_view_ImageView), (ViewGroup) getView().getParent());
+            }catch (NullPointerException e) {
+                Log.e(LOG_TAG,"Error",e);}
             }
         }
     }

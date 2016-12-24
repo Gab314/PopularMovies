@@ -32,7 +32,7 @@ public class CustomImageAdapter extends ArrayAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.movie_grid, parent, false);
         }
-        ImageView poster = (ImageView) convertView.findViewById(R.id.detail_poster_ImageView);
+        ImageView poster = (ImageView) convertView.findViewById(R.id.grid_view_ImageView);
 
         Uri uri = Uri.parse(BASE_URL).buildUpon()
                 .appendPath(movieItem.posterPath).build();
