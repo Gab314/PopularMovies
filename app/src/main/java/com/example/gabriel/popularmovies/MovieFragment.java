@@ -1,8 +1,11 @@
 package com.example.gabriel.popularmovies;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.example.gabriel.popularmovies.R;
@@ -32,13 +37,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class MovieFragment extends Fragment {
-    //private ArrayAdapter<String> mMovieAdapter;
     private ImageAdapter mImageAdapter;
     public MovieFragment() {
 
     }
+    ArrayList<MovieItem> movieList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,29 +55,23 @@ public class MovieFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.movie_list, container, false);
+            View rootView = inflater.inflate(R.layout.movie_list, container, false);
+            movieList = new ArrayList<>();
+            ListView movieListView = (ListView) rootView.findViewById(R.id.list_listView);
+            mImageAdapter = new ImageAdapter(getActivity(), movieList);
+            movieListView.setAdapter(mImageAdapter);
 
-       // mMovieAdapter = new ArrayAdapter<String>(
-       //         getActivity(),
-       //         R.layout.movie_grid,
-       //         R.id.grid_view_textView,
-       //         new ArrayList<String>());
-        int i =0;
-        String j ="NOPE";
-        mImageAdapter = new ImageAdapter(getActivity(),R.id.grid_view_ImageView,new ItemMovie(i, j));
 
-       /* ListView listView = (ListView) rootView.findViewById(R.id.list_listView);
-        listView.setAdapter(mMovieAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        movieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String movie = mMovieAdapter.getItem(position);
+                String movie = mImageAdapter.getItem(position).getMovieId();
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, movie);
                 startActivity(detailIntent);
             }
-        });*/
+        });
         return rootView;
     }
     @Override
@@ -104,31 +104,47 @@ public class MovieFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        if(isOnline(getActivity())){
         updateMovies();
+        }
     }
-    public class FetchMovieTask extends AsyncTask<String, Void, ItemMovie> {
+    public boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
+    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
-        private ItemMovie getMovieDataFromJson(String movieJsonStr)
+        private ArrayList<MovieItem> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{
             final String MDB_results = "results";
             final String MDB_Poster = "poster_path";
             final String MDB_ID = "id";
+            final String MDB_synopsis = "overview";
+            final String MDB_date = "release_date";
             int a =0;
             String b = "NOPE";
-            ItemMovie itemMovie = new ItemMovie(a, b);
+            movieList = new ArrayList<>();
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
             for(int i=0; i< movieArray.length(); i++){
                 String poster;
                 String id;
+                String synopsis;
+                String date;
                 JSONObject popularResults = movieArray.getJSONObject(i);
                 poster = popularResults.getString(MDB_Poster);
                 id = popularResults.getString(MDB_ID);
-                itemMovie.put(id,poster);
-
+                synopsis = popularResults.getString(MDB_synopsis);
+                date = popularResults.getString(MDB_date);
+                MovieItem movieItem = new MovieItem(id, poster, synopsis, date);
+                movieList.add(movieItem);
             }
-            return itemMovie;
+            return movieList;
 
         }
 
@@ -137,7 +153,7 @@ public class MovieFragment extends Fragment {
 
 
         @Override
-        protected ItemMovie doInBackground(String... params) {
+        protected ArrayList<MovieItem> doInBackground(String... params) {
             if (params.length == 0) {
                 return null;
             }
@@ -200,10 +216,11 @@ public class MovieFragment extends Fragment {
 
         }
         //@Override
-        protected void onPostExecute(ItemMovie result){
-            if (result!=null){
+        protected void onPostExecute(ArrayList<MovieItem> movies){
+            mImageAdapter.clear();
+            if (movies !=null){
                 try{
-            mImageAdapter.addImage(result, getView().findViewById(R.id.grid_view_ImageView), (ViewGroup) getView().getParent());
+            mImageAdapter.addAll(movies);
             }catch (NullPointerException e) {
                 Log.e(LOG_TAG,"Error",e);}
             }
