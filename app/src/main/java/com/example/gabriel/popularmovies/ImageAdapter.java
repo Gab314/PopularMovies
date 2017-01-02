@@ -48,7 +48,7 @@ public class ImageAdapter extends ArrayAdapter<MovieItem> {
 
 
         Picasso.with(getContext()).setLoggingEnabled(true);
-        Picasso.with(getContext()).load(uri).into(poster);
+        Picasso.with(getContext()).load(uri).placeholder(R.mipmap.ic_launcher).into(poster);
 
         return listItemView;
     }

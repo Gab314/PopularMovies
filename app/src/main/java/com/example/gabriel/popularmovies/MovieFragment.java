@@ -93,12 +93,12 @@ public class MovieFragment extends Fragment {
     }
     public void updateMovies2() {
         FetchMovieTask movieTask = new FetchMovieTask();
-        String hrated = "vote_average.desc";
+        String hrated = "top_rated";
         movieTask.execute(hrated);
     }
     public void updateMovies() {
         FetchMovieTask movieTask = new FetchMovieTask();
-        String pop = "popularity.desc";
+        String pop = "popular";
         movieTask.execute(pop);
     }
     @Override
@@ -162,12 +162,11 @@ public class MovieFragment extends Fragment {
             String movieJsonStr = null;
             Bitmap PosterIcon;
             try{
-                final String MDB_BASE_URL = "https://api.themoviedb.org/3/discover/movie";
+                final String MDB_BASE_URL = "https://api.themoviedb.org/3/movie";
                 final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
-                final String MDB_SORT_PARAM = "sort_by";
                 Uri builtUri = Uri.parse(MDB_BASE_URL).buildUpon()
-                        .appendQueryParameter(MDB_SORT_PARAM, params[0])
+                        .appendPath( params[0])
                         .appendQueryParameter(MDB_API_PARAMS,MDB_API_KEY)
                         .build();
                 URL url = new URL(builtUri.toString());
