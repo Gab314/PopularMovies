@@ -125,8 +125,6 @@ public class MovieFragment extends Fragment {
             final String MDB_ID = "id";
             final String MDB_synopsis = "overview";
             final String MDB_date = "release_date";
-            int a =0;
-            String b = "NOPE";
             movieList = new ArrayList<>();
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
