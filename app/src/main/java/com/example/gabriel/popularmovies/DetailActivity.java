@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -81,7 +82,7 @@ public class DetailActivity extends AppCompatActivity {
             return rootView;
         }
         @Override
-        public void onStart(){
+        public void onStart() {
             super.onStart();
             updateMovieDetail();
             final ContentValues contentValues = new ContentValues();
@@ -106,6 +107,9 @@ public class DetailActivity extends AppCompatActivity {
             contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, db_title);
 
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
+
+
+
             checkBox.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
@@ -116,6 +120,14 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 }}
             );
+            try {
+                Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
+                if (cursor.getString(cursor.getColumnIndex("movie_id")) == mForeStr){
+                    checkBox.setChecked(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
         }
