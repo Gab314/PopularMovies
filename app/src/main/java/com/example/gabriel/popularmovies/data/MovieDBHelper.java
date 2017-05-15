@@ -16,12 +16,14 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE" + MovieEntry.TABLE_NAME + " (" +
-                MovieEntry.COLUMN_ID + " INTEGER PRIMARY KEY," +
-                MovieEntry.COLUMN_DATE + " TEXT NOT NULL" +
-                MovieEntry.COLUMN_POSTER + " TEXT NOT NULL" +
-                MovieEntry.COLUMN_SYNOPSIS + " TEXT NOT NULL" +
-                MovieEntry.COLUMN_RESULTS + " TEXT NOT NULL" +
+        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE IF NOT EXISTS " + MovieEntry.TABLE_NAME + " ( " +
+                MovieEntry._ID + " INTEGER PRIMARY KEY, " +
+                MovieEntry.COLUMN_ID + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_DATE + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_POSTER + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_SYNOPSIS + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_RESULTS + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_TITLE + " TEXT NOT NULL" +
                 " );";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);

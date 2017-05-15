@@ -4,6 +4,7 @@ package com.example.gabriel.popularmovies;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,10 +16,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.gabriel.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -50,6 +54,8 @@ public class DetailActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.container, fragment);
             fragmentTransaction.commit();
         }
+
+
     }
 
     @Override
@@ -78,18 +84,56 @@ public class DetailActivity extends AppCompatActivity {
         public void onStart(){
             super.onStart();
             updateMovieDetail();
+            final ContentValues contentValues = new ContentValues();
+
+            TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
+            TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
+            TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
+            TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
+            TextView PosterTextView = (TextView) getActivity().findViewById(R.id.detail_Poster_TextView);
+
+            String db_date = DateTextView.getText().toString();
+            String db_poster = PosterTextView.getText().toString();
+            String db_synopsis = SynopsisTextView.getText().toString();
+            String db_results = DetailTextView.getText().toString();
+            String db_title = TitleTextView.getText().toString();
+
+            contentValues.put(MovieContract.MovieEntry.COLUMN_ID, mForeStr);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_DATE, db_date);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER, db_poster);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, db_synopsis);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_RESULTS, db_results);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, db_title);
+
+            final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
+            checkBox.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    if (checkBox.isChecked()){
+                        getActivity().getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
+
+                        Toast.makeText(getActivity(), "Added to Favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }}
+            );
+
+
         }
         public void updateMovieDetail() {
             FetchMovieTask movieTask = new FetchMovieTask();
             String pop = "3/movie/" + mForeStr;
             movieTask.execute(pop);
+
         }
+
+
     public class FetchMovieTask extends AsyncTask<String,Void,String[]>{
         TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
         TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
         TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
         TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
         ImageView PosterImageView = (ImageView) getActivity().findViewById(R.id.detail_poster_ImageView);
+        TextView PosterTextView = (TextView) getActivity().findViewById(R.id.detail_Poster_TextView);
         private String[] getMovieDetailsDataFromJson(String movieJSonStr)
 
             throws JSONException{
@@ -130,7 +174,6 @@ public class DetailActivity extends AppCompatActivity {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String movieJsonStr = null;
-            Bitmap PosterIcon;
             try{
                 Uri.Builder urlBuilder = new Uri.Builder();
                 final String MDB_BASE_URL = "api.themoviedb.org";
@@ -186,16 +229,18 @@ public class DetailActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String[] result){
-            if (result!=null){;
+            if (result!=null){
                 TitleTextView.setText(result[1]);
                 DateTextView.setText(result[3]);
                 DetailTextView.setText(result[4]);
                 SynopsisTextView.setText(result[5]);
+                PosterTextView.setText(result[2]);
                 Picasso.with(getActivity())
                         .load("http://image.tmdb.org/t/p/w185" + result[2])
                         .fit()
                         .centerCrop()
                         .into(PosterImageView);
+
 
             }
         }

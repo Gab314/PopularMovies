@@ -28,4 +28,9 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/detail_Synopsis_TextView"
         android:layout_marginLeft="5dp"/>
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/detail_Poster_TextView"
+        android:visibility="gone"/>
 </GridLayout>
