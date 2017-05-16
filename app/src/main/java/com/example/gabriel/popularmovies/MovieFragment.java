@@ -66,9 +66,15 @@ public class MovieFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String movie = mImageAdapter.getItem(position).getMovieId();
+                String[] movieArray = new String[6];
+                movieArray[0] = mImageAdapter.getItem(position).getMovieId();
+                movieArray[1] = mImageAdapter.getItem(position).getMovieDate();
+                movieArray[2] = mImageAdapter.getItem(position).getMoviePoster();
+                movieArray[3] = mImageAdapter.getItem(position).getMovieSynopsis();
+                movieArray[4] = mImageAdapter.getItem(position).getMovieVote();
+                movieArray[5] = mImageAdapter.getItem(position).getMovieTitle();
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
+                        .putExtra(Intent.EXTRA_TEXT,movieArray);
                 startActivity(detailIntent);
             }
         });
@@ -125,6 +131,8 @@ public class MovieFragment extends Fragment {
             final String MDB_ID = "id";
             final String MDB_synopsis = "overview";
             final String MDB_date = "release_date";
+            final String MDB_title = "original_title";
+            final String MDB_vote = "vote_average";
             movieList = new ArrayList<>();
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(MDB_results);
@@ -134,12 +142,16 @@ public class MovieFragment extends Fragment {
                 String id;
                 String synopsis;
                 String date;
+                String title;
+                String vote;
                 JSONObject popularResults = movieArray.getJSONObject(i);
                 poster = popularResults.getString(MDB_Poster);
                 id = popularResults.getString(MDB_ID);
                 synopsis = popularResults.getString(MDB_synopsis);
                 date = popularResults.getString(MDB_date);
-                MovieItem movieItem = new MovieItem(id, poster, synopsis, date);
+                title = popularResults.getString(MDB_title);
+                vote = popularResults.getString(MDB_vote);
+                MovieItem movieItem = new MovieItem(id, poster, synopsis, date, title, vote);
                 movieList.add(movieItem);
             }
             return movieList;

@@ -67,7 +67,8 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public static class DetailFragment extends Fragment {
-        private String mForeStr;
+        private String[] mForeStr;
+        private String mForeStr2;
         private final String LOG_TAG = DetailActivity.DetailFragment.class.getSimpleName();
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,8 +76,8 @@ public class DetailActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.activity_detail, container, false);
             Intent intent = getActivity().getIntent();
 
-                mForeStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-
+                mForeStr = intent.getStringArrayExtra(Intent.EXTRA_TEXT);
+                mForeStr2 = mForeStr[0];
 
 
             return rootView;
@@ -87,32 +88,24 @@ public class DetailActivity extends AppCompatActivity {
             updateMovieDetail();
             final ContentValues contentValues = new ContentValues();
 
-            TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
-            TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
-            TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
-            TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
-            TextView PosterTextView = (TextView) getActivity().findViewById(R.id.detail_Poster_TextView);
+            Toast.makeText(getActivity(), mForeStr[5], Toast.LENGTH_SHORT).show();
 
-            String db_date = DateTextView.getText().toString();
-            String db_poster = PosterTextView.getText().toString();
-            String db_synopsis = SynopsisTextView.getText().toString();
-            String db_results = DetailTextView.getText().toString();
-            String db_title = TitleTextView.getText().toString();
-
-            contentValues.put(MovieContract.MovieEntry.COLUMN_ID, mForeStr);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_DATE, db_date);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER, db_poster);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, db_synopsis);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_RESULTS, db_results);
-            contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, db_title);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_ID, mForeStr[0]);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_DATE, mForeStr[1]);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER, mForeStr[2]);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, mForeStr[3]);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_RESULTS, mForeStr[4]);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, mForeStr[5]);
 
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
+            //final Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
 
 
 
             checkBox.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
+                    //cursor.moveToFirst();
                     if (checkBox.isChecked()){
                         getActivity().getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
 
@@ -120,20 +113,19 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 }}
             );
-            try {
-                Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
+           /* try {
                 if (cursor.getString(cursor.getColumnIndex("movie_id")) == mForeStr){
                     checkBox.setChecked(true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            } */
 
 
         }
         public void updateMovieDetail() {
             FetchMovieTask movieTask = new FetchMovieTask();
-            String pop = "3/movie/" + mForeStr;
+            String pop = "3/movie/" + mForeStr2;
             movieTask.execute(pop);
 
         }
@@ -252,7 +244,6 @@ public class DetailActivity extends AppCompatActivity {
                         .fit()
                         .centerCrop()
                         .into(PosterImageView);
-
 
             }
         }

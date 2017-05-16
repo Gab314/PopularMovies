@@ -81,7 +81,7 @@ public class MovieProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
 
-        final SQLiteDatabase db = mMovieDBHelper.getReadableDatabase();
+        final SQLiteDatabase db = mMovieDBHelper.getWritableDatabase();
 
         int match = sUriMatcher.match(uri);
         Uri returnUri;
