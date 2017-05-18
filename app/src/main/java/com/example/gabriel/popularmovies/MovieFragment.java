@@ -3,6 +3,7 @@ package com.example.gabriel.popularmovies;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.example.gabriel.popularmovies.R;
+import com.example.gabriel.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MovieFragment extends Fragment {
-    private ImageAdapter mImageAdapter;
+    public ImageAdapter mImageAdapter;
+
     public MovieFragment() {
 
     }
@@ -94,6 +97,9 @@ public class MovieFragment extends Fragment {
         }
         if (id==R.id.most_rated){
             updateMovies2();
+        }
+        if (id==R.id.favorites){
+
         }
         return true;
     }
@@ -235,5 +241,4 @@ public class MovieFragment extends Fragment {
             }
         }
     }
-
 }
