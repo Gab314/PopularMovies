@@ -1,6 +1,8 @@
 package com.example.gabriel.popularmovies;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -41,13 +43,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static android.R.attr.fragment;
+
 public class MovieFragment extends Fragment {
-    public ImageAdapter mImageAdapter;
+    public static ImageAdapter mImageAdapter;
 
     public MovieFragment() {
 
     }
-    ArrayList<MovieItem> movieList;
+    static ArrayList<MovieItem> movieList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +103,11 @@ public class MovieFragment extends Fragment {
             updateMovies2();
         }
         if (id==R.id.favorites){
-
+            FetchFavoriteMovie fetchFavoriteMovie = new FetchFavoriteMovie();
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.container, fetchFavoriteMovie);
+            fragmentTransaction.commit();
         }
         return true;
     }
@@ -128,7 +136,7 @@ public class MovieFragment extends Fragment {
                 activeNetwork.isConnectedOrConnecting();
         return isConnected;
     }
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
+    public static class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
         private ArrayList<MovieItem> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{

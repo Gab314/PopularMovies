@@ -14,6 +14,7 @@ public class MovieContract {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIEDB).build();
 
+
         public static final String TABLE_NAME = "MovieDB";
         public static final String COLUMN_RESULTS = "results";
         public static final String COLUMN_POSTER = "poster_path";
