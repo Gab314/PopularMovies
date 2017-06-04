@@ -1,6 +1,6 @@
 package com.example.gabriel.popularmovies;
 
-class MovieItem {
+public class MovieItem {
     private String movieId;
     private String moviePoster;
     private String movieSynopsis;

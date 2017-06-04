@@ -17,22 +17,34 @@ import static com.example.gabriel.popularmovies.data.MovieContract.MovieEntry.TA
 public class MovieProvider extends ContentProvider {
     public static final int MOVIEDB = 100;
     public static final int MOVIEDB_WITH_ID = 101;
+    public static final int FAVORITEDB = 200;
+    public static final int FAVORITEDB_WITH_ID = 201;
+    public static final int TOP_RATEDDB = 300;
+    public static final int TOP_RATEDDB_WITH_ID = 301;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
-        //Directory
+        //Directory for Movie List
         matcher.addURI(authority, MovieContract.PATH_MOVIEDB, MOVIEDB);
         //single item
         matcher.addURI(authority, MovieContract.PATH_MOVIEDB + "/#", MOVIEDB_WITH_ID);
-
+        //Directory for Favorite Movies DB
+        matcher.addURI(authority,MovieContract.PATH_FAVORITEDB, FAVORITEDB);
+        //single item
+        matcher.addURI(authority, MovieContract.PATH_FAVORITEDB + "/#", FAVORITEDB_WITH_ID);
+        //Directory for Top Rated DB
+        matcher.addURI(authority, MovieContract.PATH_TOP_RATEDDB, TOP_RATEDDB);
+        //single item
+        matcher.addURI(authority, MovieContract.PATH_TOP_RATEDDB + "/#", TOP_RATEDDB_WITH_ID);
         return matcher;
     }
 
     private MovieDBHelper mMovieDBHelper;
 
     @Override
+    //Starts MovieDBHelper ( creates the tables)
     public boolean onCreate() {
         Context context = getContext();
         mMovieDBHelper = new MovieDBHelper(context);
@@ -47,7 +59,7 @@ public class MovieProvider extends ContentProvider {
         Cursor retCursor;
 
         switch (match) {
-            case MOVIEDB:
+            case MOVIEDB: {
                 retCursor = db.query(TABLE_NAME,
                         strings,
                         s,
@@ -56,6 +68,27 @@ public class MovieProvider extends ContentProvider {
                         null,
                         s1);
                 break;
+            }
+            case FAVORITEDB:{
+                retCursor = db.query(MovieContract.FavoriteEntry.TABLE_NAME,
+                        strings,
+                        s,
+                        strings1,
+                        null,
+                        null,
+                        s1);
+                break;
+            }
+            case TOP_RATEDDB: {
+                retCursor = db.query(MovieContract.TopRatedEntry.TABLE_NAME,
+                        strings,
+                        s,
+                        strings1,
+                        null,
+                        null,
+                        s1);
+                break;
+            }
             default: throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         return retCursor;
@@ -72,6 +105,19 @@ public class MovieProvider extends ContentProvider {
 
             case MOVIEDB_WITH_ID:
                 return "vnd.android.cursor.item" + "/" + MovieContract.CONTENT_AUTHORITY + "/" + MovieContract.PATH_MOVIEDB;
+
+            case FAVORITEDB:
+                return "vnd.android.cursor.dir" + "/" + MovieContract.CONTENT_AUTHORITY + "/" + MovieContract.PATH_FAVORITEDB;
+
+            case FAVORITEDB_WITH_ID:
+                return "vnd.android.cursor.item" + "/" + MovieContract.CONTENT_AUTHORITY + "/" + MovieContract.PATH_FAVORITEDB;
+
+            case TOP_RATEDDB:
+                return "vnd.android.cursor.dir" + "/" + MovieContract.CONTENT_AUTHORITY + "/" + MovieContract.PATH_TOP_RATEDDB;
+
+            case TOP_RATEDDB_WITH_ID:
+                return "vnd.android.cursor.item" + "/" + MovieContract.CONTENT_AUTHORITY + "/" + MovieContract.PATH_TOP_RATEDDB;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -87,14 +133,33 @@ public class MovieProvider extends ContentProvider {
         Uri returnUri;
 
         switch (match) {
-            case MOVIEDB:
-                long id = db.insert(TABLE_NAME,null, values);
-                if (id>0) {
+            case MOVIEDB: {
+                long id = db.insert(TABLE_NAME, null, values);
+                if (id > 0) {
                     returnUri = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, id);
-                }else {
+                } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
+            }
+            case FAVORITEDB:{
+                long id = db.insert(MovieContract.FavoriteEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(MovieContract.FavoriteEntry.CONTENT_URI, id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case TOP_RATEDDB:{
+                long id = db.insert(MovieContract.TopRatedEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = ContentUris.withAppendedId(MovieContract.TopRatedEntry.CONTENT_URI, id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
             default: throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
@@ -107,13 +172,24 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = mMovieDBHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         int tasksDeleted;
-
+        if ( null == s) s = "1";
         switch (match) {
 
-            case MOVIEDB_WITH_ID:
+            case MOVIEDB_WITH_ID: {
                 String id = uri.getPathSegments().get(1);
                 tasksDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
                 break;
+            }
+            case FAVORITEDB_WITH_ID:{
+                String id = uri.getPathSegments().get(1);
+                tasksDeleted = db.delete(MovieContract.FavoriteEntry.TABLE_NAME, "_id=?", new String[]{id});
+                break;
+            }
+            case TOP_RATEDDB_WITH_ID:{
+                String id = uri.getPathSegments().get(1);
+                tasksDeleted = db.delete(MovieContract.TopRatedEntry.TABLE_NAME, "_id=?", new String[]{id});
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -131,9 +207,18 @@ public class MovieProvider extends ContentProvider {
         int rowUpdated;
         String id = uri.getPathSegments().get(1);
         switch (match){
-            case MOVIEDB_WITH_ID:
+            case MOVIEDB_WITH_ID: {
                 rowUpdated = db.update(TABLE_NAME, contentValues, "_id=?", new String[]{id});
                 break;
+            }
+            case FAVORITEDB_WITH_ID:{
+                rowUpdated = db.update(MovieContract.FavoriteEntry.TABLE_NAME, contentValues, "_id=?", new String[]{id});
+                break;
+            }
+            case TOP_RATEDDB_WITH_ID:{
+                rowUpdated = db.update(MovieContract.TopRatedEntry.TABLE_NAME, contentValues, "_id=?", new String[]{id});
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri " + uri);
         }
