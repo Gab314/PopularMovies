@@ -26,6 +26,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.example.gabriel.popularmovies.R;
+import com.example.gabriel.popularmovies.Sync.MovieDBSyncAdapter;
 import com.example.gabriel.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
@@ -112,14 +113,12 @@ public class MovieFragment extends Fragment {
         return true;
     }
     public void updateMovies2() {
-        FetchMovieTask movieTask = new FetchMovieTask();
         String hrated = "top_rated";
-        movieTask.execute(hrated);
+        MovieDBSyncAdapter.syncImmediately(getActivity(), hrated);
     }
     public void updateMovies() {
-        FetchMovieTask movieTask = new FetchMovieTask();
-        String pop = "popular";
-        movieTask.execute(pop);
+        String popular = "most_popular";
+        MovieDBSyncAdapter.syncImmediately(getActivity(), popular);
     }
     @Override
     public void onStart(){
@@ -187,7 +186,7 @@ public class MovieFragment extends Fragment {
             Bitmap PosterIcon;
             try{
                 final String MDB_BASE_URL = "https://api.themoviedb.org/3/movie";
-                final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
+                final String MDB_API_PARAMS = "api_key";
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
                 Uri builtUri = Uri.parse(MDB_BASE_URL).buildUpon()
                         .appendPath( params[0])

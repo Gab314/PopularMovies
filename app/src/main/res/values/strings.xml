@@ -12,4 +12,6 @@
     <string name="pref_enable_notifications_false">Not Enabled</string>
     <string name="pref_enable_notifications_default" translatable="false">true</string>
     <string name="pref_last_notification">last_notification</string>
+    <string name="content_authority">com.example.gabriel.popularmovies</string>
+    <string name="sync_account_type">gabriel.example.com</string>
 </resources>

@@ -1,13 +1,13 @@
 package com.example.gabriel.popularmovies;
 
 public class MovieItem {
-    private String movieId;
-    private String moviePoster;
-    private String movieSynopsis;
-    private String movieDate;
-    private String movieTitle;
-    private String movieVote;
-    MovieItem(String id, String posterPath, String synopsis, String date, String title, String vote) {
+    String movieId;
+    String moviePoster;
+    String movieSynopsis;
+    String movieDate;
+    String movieTitle;
+    String movieVote;
+    public MovieItem(String id, String posterPath, String synopsis, String date, String title, String vote) {
         moviePoster = posterPath;
         movieId = id;
         movieSynopsis = synopsis;
