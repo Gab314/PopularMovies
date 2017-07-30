@@ -60,6 +60,7 @@ public class MovieFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final String LOG_TAG = MovieFragment.class.getSimpleName();
             View rootView = inflater.inflate(R.layout.movie_list, container, false);
             movieList = new ArrayList<>();
             ListView movieListView = (ListView) rootView.findViewById(R.id.list_listView);
@@ -71,15 +72,19 @@ public class MovieFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String[] movieArray = new String[6];
-                movieArray[0] = mImageAdapter.getItem(position).getMovieId();
-                movieArray[1] = mImageAdapter.getItem(position).getMovieDate();
-                movieArray[2] = mImageAdapter.getItem(position).getMoviePoster();
-                movieArray[3] = mImageAdapter.getItem(position).getMovieSynopsis();
-                movieArray[4] = mImageAdapter.getItem(position).getMovieVote();
-                movieArray[5] = mImageAdapter.getItem(position).getMovieTitle();
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movieArray);
-                startActivity(detailIntent);
+                try {
+                    movieArray[0] = mImageAdapter.getItem(position).getMovieId();
+                    movieArray[1] = mImageAdapter.getItem(position).getMovieDate();
+                    movieArray[2] = mImageAdapter.getItem(position).getMoviePoster();
+                    movieArray[3] = mImageAdapter.getItem(position).getMovieSynopsis();
+                    movieArray[4] = mImageAdapter.getItem(position).getMovieVote();
+                    movieArray[5] = mImageAdapter.getItem(position).getMovieTitle();
+                    Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra(Intent.EXTRA_TEXT, movieArray);
+                    startActivity(detailIntent);
+                }catch (NullPointerException e){
+                    Log.e(LOG_TAG,"Error",e);
+                }
             }
         });
         return rootView;
@@ -120,22 +125,22 @@ public class MovieFragment extends Fragment {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container, newFragment).commit();
     }
-    @Override
+
     public void onStart(){
         super.onStart();
         if(isOnline(getActivity())){
         updateMovies();
         }
     }
+
     public boolean isOnline(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
+        return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-        return isConnected;
     }
-    public  class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
+     private class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
         private ArrayList<MovieItem> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{
@@ -199,14 +204,14 @@ public class MovieFragment extends Fragment {
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null){
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) !=null){
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {

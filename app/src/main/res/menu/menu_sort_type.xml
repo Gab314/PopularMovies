@@ -4,7 +4,9 @@
         android:title="@string/popularity"
         android:orderInCategory="1"/>
     <item android:id="@+id/most_rated"
-        android:title="@string/rated"/>
+        android:title="@string/rated"
+        android:orderInCategory="2"/>
     <item android:id="@+id/favorite"
-        android:title="@string/favorite"/>
+        android:title="@string/favorite"
+        android:orderInCategory="3"/>
 </menu>

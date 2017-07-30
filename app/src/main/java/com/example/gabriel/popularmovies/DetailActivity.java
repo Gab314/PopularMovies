@@ -6,8 +6,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -95,19 +93,29 @@ if (mForeStr[1] != null) {
     contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, mForeStr[5]);
 }
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
-            //final Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
-
+            if (mForeStr[1] == null){
+                checkBox.setChecked(true);
+            }
 
 
             checkBox.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
-                    //cursor.moveToFirst();
-                    if (checkBox.isChecked() && mForeStr[1] != null){
-                        getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,contentValues);
-
+                    Uri uri = MovieContract.FavoriteEntry.CONTENT_URI;
+                    uri = uri.buildUpon().appendPath(mForeStr[0]).build();
+                if (mForeStr[1] != null) {
+                    if (checkBox.isChecked()) {
+                        getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, contentValues);
                         Toast.makeText(getActivity(), "Added to Favorites", Toast.LENGTH_SHORT).show();
-                    }else Toast.makeText(getActivity(), "Already in Favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (mForeStr[1] == null) {
+                    if (checkBox.isChecked()) {
+                        Toast.makeText(getActivity(), "<3", Toast.LENGTH_SHORT).show();
+
+                }else getActivity().getContentResolver().delete(uri,null,null);
+                    Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_SHORT).show();
+                }
 
                 }}
             );

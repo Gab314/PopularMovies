@@ -2,6 +2,7 @@
     <string name="app_name">Popular Movies</string>
     <string name="sort_type">Sort Type</string>
     <string name="popularity">Most Popular</string>
-    <string name="rated">highest rated</string>
-    <string name="favorite">favorite</string>
+    <string name="rated">Highest Rated</string>
+    <string name="favorite">Favorite</string>
+    <string name="home">Home</string>
 </resources>
