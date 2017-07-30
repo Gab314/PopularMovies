@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -84,15 +85,15 @@ public class DetailActivity extends AppCompatActivity {
             updateMovieDetail();
             final ContentValues contentValues = new ContentValues();
 
-            Toast.makeText(getActivity(), mForeStr[5], Toast.LENGTH_SHORT).show();
-
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_ID, mForeStr[0]);
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_DATE, mForeStr[1]);
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, mForeStr[2]);
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_SYNOPSIS, mForeStr[3]);
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_RESULTS, mForeStr[4]);
-            contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, mForeStr[5]);
-
+            //Toast.makeText(getActivity(), mForeStr[5], Toast.LENGTH_SHORT).show();
+if (mForeStr[1] != null) {
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_ID, mForeStr[0]);
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_DATE, mForeStr[1]);
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, mForeStr[2]);
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_SYNOPSIS, mForeStr[3]);
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_RESULTS, mForeStr[4]);
+    contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, mForeStr[5]);
+}
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
             //final Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
 
@@ -102,11 +103,12 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     //cursor.moveToFirst();
-                    if (checkBox.isChecked()){
+                    if (checkBox.isChecked() && mForeStr[1] != null){
                         getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,contentValues);
 
                         Toast.makeText(getActivity(), "Added to Favorites", Toast.LENGTH_SHORT).show();
-                    }
+                    }else Toast.makeText(getActivity(), "Already in Favorites", Toast.LENGTH_SHORT).show();
+
                 }}
             );
         }
@@ -115,12 +117,13 @@ public class DetailActivity extends AppCompatActivity {
             String pop = "3/movie/" + mForeStr[0];
             movieTask.execute(pop);
         }
-    public class FetchMovieTask extends AsyncTask<String,Void,String[]>{
+    class FetchMovieTask extends AsyncTask<String,Void,String[]>{
         TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
         TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
         TextView DetailTextView = (TextView) getActivity().findViewById(R.id.detail_vote_TextView);
         TextView SynopsisTextView = (TextView) getActivity().findViewById(R.id.detail_Synopsis_TextView);
         ImageView PosterImageView = (ImageView) getActivity().findViewById(R.id.detail_poster_ImageView);
+
         private String[] getMovieDetailsDataFromJson(String movieJSonStr)
 
             throws JSONException{
@@ -161,7 +164,7 @@ public class DetailActivity extends AppCompatActivity {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String movieJsonStr = null;
-            Bitmap PosterIcon;
+
             try{
                 Uri.Builder urlBuilder = new Uri.Builder();
                 final String MDB_BASE_URL = "api.themoviedb.org";
@@ -177,14 +180,14 @@ public class DetailActivity extends AppCompatActivity {
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null){
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) !=null){
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -217,7 +220,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(String[] result){
-            if (result!=null){;
+            if (result!=null){
                 TitleTextView.setText(result[1]);
                 DateTextView.setText(result[3]);
                 DetailTextView.setText(result[4]);
