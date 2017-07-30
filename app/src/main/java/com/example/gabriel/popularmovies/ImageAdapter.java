@@ -53,5 +53,6 @@ public class ImageAdapter extends ArrayAdapter<MovieItem> {
         return listItemView;
     }
 
-    }
+
+}
 

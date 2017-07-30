@@ -5,18 +5,22 @@ public class MovieItem {
     String moviePoster;
     String movieSynopsis;
     String movieDate;
-    public MovieItem(String id, String posterPath, String synopsis, String date) {
+    String movieTitle;
+    String movieVote;
+    public MovieItem(String id, String posterPath, String synopsis, String date, String title, String vote) {
         moviePoster = posterPath;
         movieId = id;
         movieSynopsis = synopsis;
         movieDate = date;
+        movieTitle = title;
+        movieVote = vote;
     }
 
     public String getMoviePoster(){
         return moviePoster;
     }
 
-    public String getMovieId(){
+    public  String getMovieId(){
         return movieId;
     }
 
@@ -26,5 +30,13 @@ public class MovieItem {
 
     public  String getMovieDate(){
         return movieDate;
+    }
+
+    String getMovieTitle(){
+        return movieTitle;
+    }
+    String getMovieVote() {
+        return movieVote;
+
     }
 }

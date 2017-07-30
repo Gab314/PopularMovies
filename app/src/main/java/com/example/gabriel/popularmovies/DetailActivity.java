@@ -4,6 +4,7 @@ package com.example.gabriel.popularmovies;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,10 +16,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.gabriel.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -60,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public static class DetailFragment extends Fragment {
-        private String mForeStr;
+        private String[] mForeStr;
         private final String LOG_TAG = DetailActivity.DetailFragment.class.getSimpleName();
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +72,7 @@ public class DetailActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.activity_detail, container, false);
             Intent intent = getActivity().getIntent();
 
-                mForeStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+                mForeStr = intent.getStringArrayExtra(Intent.EXTRA_TEXT);
 
 
 
@@ -78,10 +82,37 @@ public class DetailActivity extends AppCompatActivity {
         public void onStart(){
             super.onStart();
             updateMovieDetail();
+            final ContentValues contentValues = new ContentValues();
+
+            Toast.makeText(getActivity(), mForeStr[5], Toast.LENGTH_SHORT).show();
+
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_ID, mForeStr[0]);
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_DATE, mForeStr[1]);
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, mForeStr[2]);
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_SYNOPSIS, mForeStr[3]);
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_RESULTS, mForeStr[4]);
+            contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, mForeStr[5]);
+
+            final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
+            //final Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, new String[]{"movie_id"}, mForeStr, null, null);
+
+
+
+            checkBox.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    //cursor.moveToFirst();
+                    if (checkBox.isChecked()){
+                        getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,contentValues);
+
+                        Toast.makeText(getActivity(), "Added to Favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }}
+            );
         }
         public void updateMovieDetail() {
             FetchMovieTask movieTask = new FetchMovieTask();
-            String pop = "3/movie/" + mForeStr;
+            String pop = "3/movie/" + mForeStr[0];
             movieTask.execute(pop);
         }
     public class FetchMovieTask extends AsyncTask<String,Void,String[]>{
