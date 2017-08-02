@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,16 +16,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gabriel.popularmovies.Sync.SyncWithDB;
 import com.example.gabriel.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -33,8 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
+
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -62,6 +62,13 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
+    public  void reviews(View view){
+        Toast mToast;
+        Button button  = (Button) view.findViewById(R.id.detail_reviews_Button);
+        mToast = Toast.makeText(this, button.getText(),Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
     public static class DetailFragment extends Fragment {
         private String[] mForeStr;
         private final String LOG_TAG = DetailActivity.DetailFragment.class.getSimpleName();
@@ -77,13 +84,15 @@ public class DetailActivity extends AppCompatActivity {
 
             return rootView;
         }
+
+
         @Override
         public void onStart(){
             super.onStart();
             updateMovieDetail();
             final ContentValues contentValues = new ContentValues();
 
-            //Toast.makeText(getActivity(), mForeStr[5], Toast.LENGTH_SHORT).show();
+
 if (mForeStr[1] != null) {
     contentValues.put(MovieContract.FavoriteEntry.COLUMN_ID, mForeStr[0]);
     contentValues.put(MovieContract.FavoriteEntry.COLUMN_DATE, mForeStr[1]);
@@ -93,6 +102,7 @@ if (mForeStr[1] != null) {
     contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, mForeStr[5]);
 }
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
+            final Button trailer_Button = (Button) getActivity().findViewById(R.id.detail_trailer_Button);
             if (mForeStr[1] == null){
                 checkBox.setChecked(true);
             }
@@ -119,12 +129,34 @@ if (mForeStr[1] != null) {
 
                 }}
             );
+
+            trailer_Button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateMovieTrailer();
+                }
+            });
+
+
+
+
+
         }
         public void updateMovieDetail() {
             FetchMovieTask movieTask = new FetchMovieTask();
             String pop = "3/movie/" + mForeStr[0];
             movieTask.execute(pop);
         }
+        public void updateMovieTrailer() {
+
+            SyncWithDB syncWithDB = new SyncWithDB(getActivity());
+            syncWithDB.execute(mForeStr[0]);
+
+
+        }
+
+
+
     class FetchMovieTask extends AsyncTask<String,Void,String[]>{
         TextView DateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_TextView);
         TextView TitleTextView = (TextView) getActivity().findViewById(R.id.detail_title_TextView);
@@ -175,7 +207,7 @@ if (mForeStr[1] != null) {
 
             try{
                 Uri.Builder urlBuilder = new Uri.Builder();
-                final String MDB_BASE_URL = "api.themoviedb.org";
+                    final String MDB_BASE_URL = "api.themoviedb.org";
                 final String MDB_API_PARAMS = "api_key";
                 final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
                 urlBuilder.scheme("http");
