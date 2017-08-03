@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gabriel.popularmovies.Sync.SyncReviewsDB;
 import com.example.gabriel.popularmovies.Sync.SyncWithDB;
 import com.example.gabriel.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
@@ -62,13 +63,6 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
-    public  void reviews(View view){
-        Toast mToast;
-        Button button  = (Button) view.findViewById(R.id.detail_reviews_Button);
-        mToast = Toast.makeText(this, button.getText(),Toast.LENGTH_SHORT);
-        mToast.show();
-    }
-
     public static class DetailFragment extends Fragment {
         private String[] mForeStr;
         private final String LOG_TAG = DetailActivity.DetailFragment.class.getSimpleName();
@@ -103,6 +97,7 @@ if (mForeStr[1] != null) {
 }
             final CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.detail_CheckBox);
             final Button trailer_Button = (Button) getActivity().findViewById(R.id.detail_trailer_Button);
+            final Button reviews_Button = (Button) getActivity().findViewById(R.id.detail_reviews_Button);
             if (mForeStr[1] == null){
                 checkBox.setChecked(true);
             }
@@ -136,7 +131,12 @@ if (mForeStr[1] != null) {
                     updateMovieTrailer();
                 }
             });
-
+            reviews_Button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateMovieReviews();
+                }
+            });
 
 
 
@@ -151,10 +151,12 @@ if (mForeStr[1] != null) {
 
             SyncWithDB syncWithDB = new SyncWithDB(getActivity());
             syncWithDB.execute(mForeStr[0]);
-
-
         }
-
+        public void updateMovieReviews() {
+            Intent intent = new Intent(getActivity(), SyncReviewsDB.class)
+                    .putExtra(Intent.EXTRA_TEXT, mForeStr[0]);
+            startActivity(intent);
+        }
 
 
     class FetchMovieTask extends AsyncTask<String,Void,String[]>{

@@ -19,6 +19,9 @@
         <activity android:name=".DetailActivity">
 
         </activity>
+        <activity android:name=".Sync$SyncReviewsDB">
+
+        </activity>
         <provider
             android:authorities="com.example.gabriel.popularmovies"
             android:name="com.example.gabriel.popularmovies.data.MovieProvider"
