@@ -17,10 +17,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailActivity">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
         </activity>
-        <activity android:name=".Sync$SyncReviewsDB">
-
+        <activity android:name=".Sync.SyncReviewsDB">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
         </activity>
         <provider
             android:authorities="com.example.gabriel.popularmovies"
