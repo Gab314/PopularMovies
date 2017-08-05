@@ -30,11 +30,11 @@ public class ImageAdapter extends ArrayAdapter<MovieItem> {
         final String BASE_URL = "http://image.tmdb.org/t/p/w185";
         View listItemView = convertView;
         if(listItemView == null){
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.movie_grid, parent, false);
+            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.my_recycler_view, parent, false);
         }
         MovieItem currentMovie = getItem(position);
 
-        ImageView poster = (ImageView) listItemView.findViewById(R.id.grid_view_ImageView);
+        ImageView poster = (ImageView) listItemView.findViewById(R.id.my_Recycler_View);
 
         assert currentMovie != null;
         Uri uri = Uri.parse(BASE_URL).buildUpon()

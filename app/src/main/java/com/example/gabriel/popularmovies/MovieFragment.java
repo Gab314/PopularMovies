@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,9 +34,10 @@ import java.util.ArrayList;
 
 
 @SuppressWarnings("ALL")
-public class MovieFragment extends Fragment {
-    private ImageAdapter mImageAdapter;
+public class MovieFragment extends Fragment implements RecyclerMovieAdapter.ItemClickListener {
+    private RecyclerMovieAdapter adapter;
     private Integer mItem;
+    final String LOG_TAG = MovieFragment.class.getSimpleName();
     public MovieFragment() {
 
     }
@@ -55,37 +58,21 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final String LOG_TAG = MovieFragment.class.getSimpleName();
-            View rootView = inflater.inflate(R.layout.movie_list, container, false);
+
+            View rootView = inflater.inflate(R.layout.my_recycler_view, container, false);
             movieList = new ArrayList<>();
-            ListView movieListView = (ListView) rootView.findViewById(R.id.list_listView);
-        Parcelable state = movieListView.onSaveInstanceState();
-        movieListView.onRestoreInstanceState(state);
-            mImageAdapter = new ImageAdapter(getActivity(), movieList);
-            movieListView.setAdapter(mImageAdapter);
-
-        movieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String[] movieArray = new String[6];
-                try {
-                    movieArray[0] = mImageAdapter.getItem(position).getMovieId();
-                    movieArray[1] = mImageAdapter.getItem(position).getMovieDate();
-                    movieArray[2] = mImageAdapter.getItem(position).getMoviePoster();
-                    movieArray[3] = mImageAdapter.getItem(position).getMovieSynopsis();
-                    movieArray[4] = mImageAdapter.getItem(position).getMovieVote();
-                    movieArray[5] = mImageAdapter.getItem(position).getMovieTitle();
-                    Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, movieArray);
-                    startActivity(detailIntent);
-                }catch (NullPointerException e){
-                    Log.e(LOG_TAG,"Error",e);
-                }
-            }
-        });
+        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.my_Recycler_View);
+        RecyclerMovieAdapter adapter = new RecyclerMovieAdapter(getActivity(),movieList);
+        //Parcelable state = movieListView.onSaveInstanceState();  Saving position in a movielist;
+        //movieListView.onRestoreInstanceState(state);
+        int numberOfColumns = 2;
+            GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
+            rvMovies.setLayoutManager(mLayoutManager);
+            rvMovies.setAdapter(adapter);
+        adapter.setClickListener(this);
         return rootView;
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.menu_sort_type, menu);
@@ -149,7 +136,27 @@ public class MovieFragment extends Fragment {
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
     }
-     private class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
+
+    @Override
+    public void onItemClick(View view, int position) {
+        String[] movieArray = new String[6];
+        try {
+            movieArray[0] = adapter.getItem(position).getMovieId();
+            movieArray[1] = adapter.getItem(position).getMovieDate();
+            movieArray[2] = adapter.getItem(position).getMoviePoster();
+            movieArray[3] = adapter.getItem(position).getMovieSynopsis();
+            movieArray[4] = adapter.getItem(position).getMovieVote();
+            movieArray[5] = adapter.getItem(position).getMovieTitle();
+            Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                    .putExtra(Intent.EXTRA_TEXT, movieArray);
+            startActivity(detailIntent);
+        }catch (NullPointerException e){
+            Log.e(LOG_TAG,"Error",e);
+        }
+    }
+
+
+    private class FetchMovieTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
         private ArrayList<MovieItem> getMovieDataFromJson(String movieJsonStr)
                 throws JSONException{
@@ -259,7 +266,8 @@ public class MovieFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieItem> movies){
                 try {
-                    mImageAdapter.clear();
+                    if (adapter != null)
+                    adapter.clear();
                 }catch (NullPointerException e){
                     Log.e(LOG_TAG,"Error",e);
                 }
@@ -267,7 +275,8 @@ public class MovieFragment extends Fragment {
 
             if (movies !=null){
                 try{
-            mImageAdapter.addAll(movies);
+               movieList.addAll(movies);
+                adapter.notifyDataSetChanged();
 
             }catch (NullPointerException e) {
                 Log.e(LOG_TAG,"Error",e);}
