@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.gabriel.popularmovies.BuildConfig;
 import com.example.gabriel.popularmovies.R;
 import com.example.gabriel.popularmovies.ReviewAdapter;
 import com.example.gabriel.popularmovies.ReviewItem;
@@ -65,6 +68,8 @@ public class SyncReviewsDB extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_reviews, container, false);
             reviewList = new ArrayList<>();
             ListView reviewListView = (ListView) rootView.findViewById(R.id.review_List_view);
+            Parcelable state = reviewListView.onSaveInstanceState();
+            reviewListView.onRestoreInstanceState(state);
             Intent intent = getActivity().getIntent();
             mStr = intent.getStringExtra(Intent.EXTRA_TEXT);
 
@@ -132,7 +137,7 @@ public class SyncReviewsDB extends AppCompatActivity {
                     final String MDB_MOVIES = "movie";
                     final String MDB_VIDEOS = "reviews";
                     final String MDB_API_PARAMS = "api_key";
-                    final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
+                    final String MDB_API_KEY = BuildConfig.MOVIE_DB_API_KEY;
                     urlBuilder.scheme("http");
                     urlBuilder.authority(MDB_BASE_URL);
                     urlBuilder.appendEncodedPath(MDB_NUMBER);

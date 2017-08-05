@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.gabriel.popularmovies.BuildConfig;
 import com.example.gabriel.popularmovies.DetailActivity;
 import com.example.gabriel.popularmovies.ReviewItem;
 import com.example.gabriel.popularmovies.data.MovieContract;
@@ -66,7 +67,7 @@ public class SyncWithDB extends AsyncTask<String,Void,String> {
             final String MDB_MOVIES = "movie";
             final String MDB_VIDEOS = "videos";
             final String MDB_API_PARAMS = "api_key";
-            final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
+            final String MDB_API_KEY = BuildConfig.MOVIE_DB_API_KEY;
             urlBuilder.scheme("http");
             urlBuilder.authority(MDB_BASE_URL);
             urlBuilder.appendEncodedPath(MDB_NUMBER);

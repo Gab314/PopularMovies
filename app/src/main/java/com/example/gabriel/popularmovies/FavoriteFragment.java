@@ -76,7 +76,6 @@ public class FavoriteFragment extends MovieFragment implements  android.app.Load
     @Override
     public void onResume() {
         super.onResume();
-
         // re-queries for all tasks
         getLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
     }

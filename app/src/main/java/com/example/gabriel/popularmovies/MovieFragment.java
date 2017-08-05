@@ -4,14 +4,12 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,32 +18,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ListView;
-
-import com.example.gabriel.popularmovies.R;
-import com.example.gabriel.popularmovies.data.MovieContract;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
 
 @SuppressWarnings("ALL")
 public class MovieFragment extends Fragment {
     private ImageAdapter mImageAdapter;
+    private Integer mItem;
     public MovieFragment() {
 
     }
@@ -55,15 +44,23 @@ public class MovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mItem = 0;
+        if (savedInstanceState != null  && savedInstanceState.getSerializable("ItemMenuNr") != null){
+            mItem = (Integer) savedInstanceState.getSerializable("ItemMenuNr");
+        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         final String LOG_TAG = MovieFragment.class.getSimpleName();
             View rootView = inflater.inflate(R.layout.movie_list, container, false);
             movieList = new ArrayList<>();
             ListView movieListView = (ListView) rootView.findViewById(R.id.list_listView);
+        Parcelable state = movieListView.onSaveInstanceState();
+        movieListView.onRestoreInstanceState(state);
             mImageAdapter = new ImageAdapter(getActivity(), movieList);
             movieListView.setAdapter(mImageAdapter);
 
@@ -112,12 +109,18 @@ public class MovieFragment extends Fragment {
     public void updateMovies2() {
         FetchMovieTask movieTask = new FetchMovieTask();
         String hrated = "top_rated";
-        movieTask.execute(hrated);
+        mItem = 1;
+        if (isOnline(getActivity())) {
+            movieTask.execute(hrated);
+        }
     }
     public void updateMovies() {
         FetchMovieTask movieTask = new FetchMovieTask();
         String pop = "popular";
-        movieTask.execute(pop);
+        mItem = 0;
+        if (isOnline(getActivity())) {
+            movieTask.execute(pop);
+        }
     }
     public void updateMovies3() {
 
@@ -126,11 +129,17 @@ public class MovieFragment extends Fragment {
         transaction.replace(R.id.container, newFragment).commit();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle state){
+        super.onSaveInstanceState(state);
+        state.putSerializable("ItemMenuNr",mItem);
+    }
+
     public void onStart(){
         super.onStart();
-        if(isOnline(getActivity())){
-        updateMovies();
-        }
+        if (mItem == 1){
+            updateMovies2();
+        }else  updateMovies();
     }
 
     public boolean isOnline(Context context) {
@@ -152,25 +161,30 @@ public class MovieFragment extends Fragment {
             final String MDB_Title = "original_title";
             final String MDB_vote = "vote_average";
             movieList = new ArrayList<>();
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(MDB_results);
 
-            for(int i=0; i< movieArray.length(); i++){
-                String poster;
-                String id;
-                String synopsis;
-                String date;
-                String title;
-                String vote;
-                JSONObject popularResults = movieArray.getJSONObject(i);
-                poster = popularResults.getString(MDB_Poster);
-                id = popularResults.getString(MDB_ID);
-                synopsis = popularResults.getString(MDB_synopsis);
-                date = popularResults.getString(MDB_date);
-                title = popularResults.getString(MDB_Title);
-                vote = popularResults.getString(MDB_vote);
-                MovieItem movieItem = new MovieItem(id, poster, synopsis, date, title, vote);
-                movieList.add(movieItem);
+            try {
+                JSONObject movieJson = new JSONObject(movieJsonStr);
+                JSONArray movieArray = movieJson.getJSONArray(MDB_results);
+
+                for (int i = 0; i < movieArray.length(); i++) {
+                    String poster;
+                    String id;
+                    String synopsis;
+                    String date;
+                    String title;
+                    String vote;
+                    JSONObject popularResults = movieArray.getJSONObject(i);
+                    poster = popularResults.getString(MDB_Poster);
+                    id = popularResults.getString(MDB_ID);
+                    synopsis = popularResults.getString(MDB_synopsis);
+                    date = popularResults.getString(MDB_date);
+                    title = popularResults.getString(MDB_Title);
+                    vote = popularResults.getString(MDB_vote);
+                    MovieItem movieItem = new MovieItem(id, poster, synopsis, date, title, vote);
+                    movieList.add(movieItem);
+                }
+            }catch (Exception e){
+                Log.e(LOG_TAG,"Error",e);
             }
             return movieList;
 
@@ -192,7 +206,7 @@ public class MovieFragment extends Fragment {
             try{
                 final String MDB_BASE_URL = "https://api.themoviedb.org/3/movie";
                 final String MDB_API_PARAMS = "api_key"; //nao sei se precisa do =
-                final String MDB_API_KEY = "8e445f0117d2e19e134382f9a2baf528";
+                final String MDB_API_KEY = BuildConfig.MOVIE_DB_API_KEY;
                 Uri builtUri = Uri.parse(MDB_BASE_URL).buildUpon()
                         .appendPath( params[0])
                         .appendQueryParameter(MDB_API_PARAMS,MDB_API_KEY)
@@ -200,15 +214,15 @@ public class MovieFragment extends Fragment {
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(5000);
+                urlConnection.setReadTimeout(1000);
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
                 StringBuilder buffer = new StringBuilder();
-                if (inputStream == null){
+                reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                if (reader == null){
                     return null;
                 }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) !=null){
                     buffer.append(line).append("\n");
