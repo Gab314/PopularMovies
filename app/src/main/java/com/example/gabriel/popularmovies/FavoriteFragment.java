@@ -21,7 +21,7 @@ import java.util.ArrayList;
 @SuppressWarnings("ALL")
 public class FavoriteFragment extends MovieFragment implements  android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
-    private ImageAdapter nImageAdapter;
+
     private CursorAdapter nCursorAdapter;
     ArrayList<MovieItem> nmovieList;
     private static final String TAG = MainActivity.class.getSimpleName();

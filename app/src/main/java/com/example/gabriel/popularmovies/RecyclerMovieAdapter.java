@@ -21,6 +21,7 @@ public class RecyclerMovieAdapter extends RecyclerView.Adapter<RecyclerMovieAdap
         public MyViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.grid_view_ImageView);
+            itemView.setOnClickListener(this);
         }
 
         @Override

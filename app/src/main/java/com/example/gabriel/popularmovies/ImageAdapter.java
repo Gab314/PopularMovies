@@ -34,7 +34,7 @@ public class ImageAdapter extends ArrayAdapter<MovieItem> {
         }
         MovieItem currentMovie = getItem(position);
 
-        ImageView poster = (ImageView) listItemView.findViewById(R.id.my_Recycler_View);
+        ImageView poster = (ImageView) listItemView.findViewById(R.id.recycler_View_rv);
 
         assert currentMovie != null;
         Uri uri = Uri.parse(BASE_URL).buildUpon()

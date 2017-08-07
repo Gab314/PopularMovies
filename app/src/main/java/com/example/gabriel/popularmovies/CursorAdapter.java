@@ -40,6 +40,6 @@ import java.net.URL;
             e.printStackTrace();
         }
         Picasso.with(context).setLoggingEnabled(true);
-        Picasso.with(context).load(uri).placeholder(R.mipmap.ic_launcher).into(poster);
+        Picasso.with(context).load(uri).into(poster);
     }
 }

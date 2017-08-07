@@ -41,8 +41,8 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
     public MovieFragment() {
 
     }
+    ArrayList<MovieItem> movieListrv;
     ArrayList<MovieItem> movieList;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,16 +60,17 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
 
 
             View rootView = inflater.inflate(R.layout.my_recycler_view, container, false);
-            movieList = new ArrayList<>();
+            movieListrv = new ArrayList<>();
         int numberOfColumns = 2;
-        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.my_Recycler_View);
+        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.recycler_View_rv);
         rvMovies.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
         rvMovies.setLayoutManager(mLayoutManager);
-        adapter = new RecyclerMovieAdapter(getActivity(),movieList);
+        adapter = new RecyclerMovieAdapter(getActivity(),movieListrv);
 
             rvMovies.setAdapter(adapter);
         adapter.setClickListener(this);
+
         return rootView;
     }
 
@@ -191,7 +192,7 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
                     movieList.add(movieItem);
                 }
             }catch (Exception e){
-                Log.e(LOG_TAG,"Error",e);
+                Log.e(LOG_TAG,"Error 1",e);
             }
             return movieList;
 
@@ -269,17 +270,17 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
                     if (adapter != null)
                     adapter.clear();
                 }catch (NullPointerException e){
-                    Log.e(LOG_TAG,"Error",e);
+                    Log.e(LOG_TAG,"Error 2",e);
                 }
 
 
             if (movies !=null){
                 try{
-               movieList.addAll(movies);
+               movieListrv.addAll(movies);
                 adapter.notifyDataSetChanged();
 
             }catch (NullPointerException e) {
-                Log.e(LOG_TAG,"Error",e);}
+                Log.e(LOG_TAG,"Error 3",e);}
             }
         }
     }
