@@ -61,13 +61,13 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
 
             View rootView = inflater.inflate(R.layout.my_recycler_view, container, false);
             movieList = new ArrayList<>();
-        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.my_Recycler_View);
-        RecyclerMovieAdapter adapter = new RecyclerMovieAdapter(getActivity(),movieList);
-        //Parcelable state = movieListView.onSaveInstanceState();  Saving position in a movielist;
-        //movieListView.onRestoreInstanceState(state);
         int numberOfColumns = 2;
-            GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
-            rvMovies.setLayoutManager(mLayoutManager);
+        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.my_Recycler_View);
+        rvMovies.setHasFixedSize(true);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
+        rvMovies.setLayoutManager(mLayoutManager);
+        adapter = new RecyclerMovieAdapter(getActivity(),movieList);
+
             rvMovies.setAdapter(adapter);
         adapter.setClickListener(this);
         return rootView;
