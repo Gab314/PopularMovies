@@ -65,6 +65,8 @@
         android:textAllCaps="false"
         android:textColor="@android:color/background_light"
         android:textSize="16sp" />
+
+
     <Button
         android:id="@+id/detail_reviews_Button"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"

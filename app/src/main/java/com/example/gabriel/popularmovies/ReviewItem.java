@@ -14,7 +14,7 @@ public class ReviewItem {
         return mAuthor;
     }
 
-    String getReviewContent(){
+   public String getReviewContent(){
         return mContent;
     }
 

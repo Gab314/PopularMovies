@@ -26,6 +26,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity"/>
         </activity>
+        <activity android:name=".Sync.SyncTrailerDB">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
+        </activity>
         <provider
             android:authorities="com.example.gabriel.popularmovies"
             android:name="com.example.gabriel.popularmovies.data.MovieProvider"

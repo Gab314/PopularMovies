@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gabriel.popularmovies.Sync.SyncReviewsDB;
+import com.example.gabriel.popularmovies.Sync.SyncTrailerDB;
 import com.example.gabriel.popularmovies.Sync.SyncWithDB;
 import com.example.gabriel.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
@@ -148,9 +149,9 @@ if (mForeStr[1] != null) {
             movieTask.execute(pop);
         }
         public void updateMovieTrailer() {
-
-            SyncWithDB syncWithDB = new SyncWithDB(getActivity());
-            syncWithDB.execute(mForeStr[0]);
+            Intent intent = new Intent(getActivity(), SyncTrailerDB.class)
+                    .putExtra(Intent.EXTRA_TEXT, mForeStr[0]);
+            startActivity(intent);
         }
         public void updateMovieReviews() {
             Intent intent = new Intent(getActivity(), SyncReviewsDB.class)

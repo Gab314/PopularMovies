@@ -12,9 +12,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ReviewAdapter extends ArrayAdapter<ReviewItem>{
+private final String mTrailer;
 
-    public ReviewAdapter(Context context, ArrayList<ReviewItem> reviews) {
+    public ReviewAdapter(Context context, ArrayList<ReviewItem> reviews, String Trailer) {
         super(context, 0, reviews);
+        mTrailer = Trailer;
     }
     @NonNull
     @Override
@@ -30,7 +32,10 @@ public class ReviewAdapter extends ArrayAdapter<ReviewItem>{
         TextView reviewContent = (TextView) convertView.findViewById(R.id.text_view_text2);
         // Populate the data into the template view using the data object
         reviewAuthor.setText(review.getReviewAuthor());
-        reviewContent.setText(review.getReviewContent());
+        if (mTrailer == null) {
+            reviewContent.setText(review.getReviewContent());
+        }
+
         // Return the completed view to render on screen
         return convertView;
     }
