@@ -1,6 +1,7 @@
 package com.example.gabriel.popularmovies;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -37,21 +38,37 @@ import java.util.ArrayList;
 public class MovieFragment extends Fragment implements RecyclerMovieAdapter.ItemClickListener {
     private RecyclerMovieAdapter adapter;
     private Integer mItem;
+    private RecyclerView rvMovies;
+    private MovieFragment mRetainedFragment;
+    private Parcelable state;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
     final String LOG_TAG = MovieFragment.class.getSimpleName();
     public MovieFragment() {
 
     }
     ArrayList<MovieItem> movieListrv;
     ArrayList<MovieItem> movieList;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mItem = 0;
-        if (savedInstanceState != null  && savedInstanceState.getSerializable("ItemMenuNr") != null){
-            mItem = (Integer) savedInstanceState.getSerializable("ItemMenuNr");
-        }
+    }
 
+    public void onRestoreInstanceState(Bundle savedInstanceState){
+
+       if (savedInstanceState != null) { state =  savedInstanceState.getParcelable(KEY_RECYCLER_STATE);}
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        if (state != null ){
+            rvMovies.getLayoutManager().onRestoreInstanceState(state);
+
+        }
     }
 
     @Override
@@ -62,10 +79,20 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
             View rootView = inflater.inflate(R.layout.my_recycler_view, container, false);
             movieListrv = new ArrayList<>();
         int numberOfColumns = 2;
-        RecyclerView rvMovies = (RecyclerView) rootView.findViewById(R.id.recycler_View_rv);
+        rvMovies = (RecyclerView) rootView.findViewById(R.id.recycler_View_rv);
+        if (savedInstanceState != null  && savedInstanceState.getSerializable("ItemMenuNr") != null){
+            mItem = (Integer) savedInstanceState.getSerializable("ItemMenuNr");
+
+        }
         rvMovies.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
+        if (state != null ){
+            rvMovies.getLayoutManager().onRestoreInstanceState(state);
+
+        }
         rvMovies.setLayoutManager(mLayoutManager);
+
+
         adapter = new RecyclerMovieAdapter(getActivity(),movieListrv);
 
             rvMovies.setAdapter(adapter);
@@ -118,16 +145,18 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
     }
 
     @Override
-    public void onSaveInstanceState(Bundle state){
-        super.onSaveInstanceState(state);
-        state.putSerializable("ItemMenuNr",mItem);
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("ItemMenuNr",mItem);
+        Parcelable listState = rvMovies.getLayoutManager().onSaveInstanceState();
+        savedInstanceState.putParcelable(KEY_RECYCLER_STATE, listState);
     }
-
-    public void onStart(){
-        super.onStart();
-        if (mItem == 1){
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (mItem == 1) {
             updateMovies2();
-        }else  updateMovies();
+        } else updateMovies();
     }
 
     public boolean isOnline(Context context) {
