@@ -26,6 +26,7 @@ public class FavoriteFragment extends MovieFragment implements  android.app.Load
     ArrayList<MovieItem> nmovieList;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int TASK_LOADER_ID = 0;
+    private final String KEY_ARRAY_LIST = "array_list";
 
     public FavoriteFragment(){
 
@@ -44,6 +45,10 @@ public class FavoriteFragment extends MovieFragment implements  android.app.Load
         View rootView = inflater.inflate(R.layout.movie_list, container, false);
         ListView movieListView = (ListView) rootView.findViewById(R.id.list_listView);
         nmovieList = new ArrayList<>();
+        if (savedInstanceState != null){
+            nmovieList  = (ArrayList<MovieItem>) savedInstanceState.getSerializable(KEY_ARRAY_LIST);
+        }
+
         Cursor nCursor = null;
         nCursorAdapter = new CursorAdapter(getActivity(),nCursor, false);
         movieListView.setAdapter(nCursorAdapter);
@@ -66,7 +71,11 @@ public class FavoriteFragment extends MovieFragment implements  android.app.Load
         });
         return rootView;
     }
-
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable(KEY_ARRAY_LIST, nmovieList);
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.menu_home, menu);

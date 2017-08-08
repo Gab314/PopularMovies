@@ -42,6 +42,7 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
     private MovieFragment mRetainedFragment;
     private Parcelable state;
     private final String KEY_RECYCLER_STATE = "recycler_state";
+    private final String KEY_ARRAY_LIST = "array_list";
     final String LOG_TAG = MovieFragment.class.getSimpleName();
     public MovieFragment() {
 
@@ -54,22 +55,12 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mItem = 0;
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState){
-
-       if (savedInstanceState != null) { state =  savedInstanceState.getParcelable(KEY_RECYCLER_STATE);}
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-
         if (state != null ){
             rvMovies.getLayoutManager().onRestoreInstanceState(state);
 
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,14 +73,11 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
         rvMovies = (RecyclerView) rootView.findViewById(R.id.recycler_View_rv);
         if (savedInstanceState != null  && savedInstanceState.getSerializable("ItemMenuNr") != null){
             mItem = (Integer) savedInstanceState.getSerializable("ItemMenuNr");
-
+            movieListrv = (ArrayList<MovieItem>) savedInstanceState.getSerializable(KEY_ARRAY_LIST);
         }
         rvMovies.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), numberOfColumns);
-        if (state != null ){
-            rvMovies.getLayoutManager().onRestoreInstanceState(state);
 
-        }
         rvMovies.setLayoutManager(mLayoutManager);
 
 
@@ -148,17 +136,15 @@ public class MovieFragment extends Fragment implements RecyclerMovieAdapter.Item
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable("ItemMenuNr",mItem);
-        Parcelable listState = rvMovies.getLayoutManager().onSaveInstanceState();
-        savedInstanceState.putParcelable(KEY_RECYCLER_STATE, listState);
+        savedInstanceState.putSerializable(KEY_ARRAY_LIST, movieListrv);
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (mItem == 1) {
-            updateMovies2();
-        } else updateMovies();
+        if (savedInstanceState == null) {
+            updateMovies();
+        }
     }
-
     public boolean isOnline(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
