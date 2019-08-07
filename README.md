@@ -1,8 +1,10 @@
 # PopularMovies
 
 Popular Movies is an Android app that lists the popular movies and highest rated movies of today.
-This is part of the Android Nanodegree by Udacity.
+This is part of the Android Nanodegree by Udacity. Data is retrieved from themoviedb.org.
 
+
+Contains:
 * SQlite database.
 * JSON parsing.
 * RecyclerView.
