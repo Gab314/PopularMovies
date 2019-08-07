@@ -1,10 +1,13 @@
 # PopularMovies
 
-Popular Movies is an Android app to view the most popular movies that are happenning right now!
+Popular Movies is an Android app that lists the popular movies and highest rated movies of today.
+This is part of the Android Nanodegree by Udacity.
 
-* See all the **Popular Movies** today.
-* See all the **Highest Rated** Movies.
+* SQlite database.
+* JSON parsing.
+* RecyclerView.
 
 <p align="center">
-  <img src="./PopularMovies Images/Screenshot_20181216-134923.png" alt="Size Limit CLI" width="380">
+  <img src="./PopularMovies Images/Screenshot_20181216-134923.png" alt="Size Limit CLI" width="260">
 </p>
+2
